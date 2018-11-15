@@ -23,8 +23,8 @@ to create results for the paper. The original package code is
 1. Follow the setup instructions below.
 
 2. See the [Introductory
-Vignette](https://stephenslab.github.io/mashr/articles/intro_mash.html) for an
-introduction to mashr.
+Vignette](https://stephenslab.github.io/mashr/articles/intro_mash.html) for
+an introduction to mashr.
 
 3. Then work through the other vignettes to learn more about mashr:
 [Introduction to mash: data-driven

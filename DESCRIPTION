@@ -29,10 +29,10 @@ Imports:
     mvtnorm,
     abind
 LinkingTo:
-    Rcpp, 
-    RcppArmadillo
+    Rcpp (>= 0.11.0), 
+    RcppArmadillo,
+    RcppGSL
 Suggests:
-    ExtremeDeconvolution (>= 1.3),
     REBayes,
     mixsqp,
     flashr,
@@ -44,4 +44,6 @@ Suggests:
 VignetteBuilder: knitr
 NeedsCompilation: yes
 RoxygenNote: 6.1.0.9000
-Remotes: stephens999/ashr
+Remotes:
+    stephens999/ashr,
+    stephenslab/flashr

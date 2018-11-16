@@ -11,8 +11,6 @@
     }
     return(fix)
 }
-
-#' @export
 extreme_deconvolution <- function(ydata, ycovar, xamp, xmean, xcovar, projection = NULL, 
     weight = NULL, fixamp = NULL, fixmean = NULL, fixcovar = NULL, tol = 1e-06, maxiter = 1e+09, 
     w = 0, logfile = NULL, splitnmerge = 0, maxsnm = FALSE, likeonly = FALSE, logweight = FALSE) {

@@ -1,5 +1,8 @@
 .Rhistory
 .Rproj.user
+config.log
+config.status
+src/Makevars
 src/*.o
 src/*.so
 vignette/*.html

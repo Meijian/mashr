@@ -212,17 +212,36 @@ extreme_deconvolution <- function(ydata, ycovar, xamp, xmean, xcovar, projection
         logweights <- weight
     }
 
-    res <- .Call("_proj_gauss_mixtures_IDL", as.double(as.vector(t(ydata))), as.double(as.vector(tycovar)),
-        as.double(as.vector(unlist(lapply(projection, t)))), as.double(as.vector(logweights)), 
-        as.integer(ndata), as.integer(dataDim), xamp = as.double(as.vector(t(xamp))), 
-        xmean = as.double(as.vector(t(xmean))), xcovar = as.double(as.vector(unlist(lapply(xcovar, 
-            t)))), as.integer(gaussDim), as.integer(ngauss), as.integer(as.vector(fixamp)), 
-        as.integer(as.vector(fixmean)), as.integer(as.vector(fixcovar)), avgloglikedata = as.double(as.vector(avgloglikedata)), 
-        as.double(tol), as.integer(maxiter), as.integer(likeonly), as.double(w), 
-        as.integer(as.vector(clog)), as.integer(n_clog), as.integer(splitnmerge), 
-        as.integer(as.vector(clog2)), as.integer(n_clog2), as.integer(noprojection), 
-        as.integer(diagerrors), as.integer(noweight), PACKAGE = "ExtremeDeconvolution")
-    # 
+    res <- .Call("_proj_gauss_mixtures_IDL",
+                 as.double(as.vector(t(ydata))),
+                 as.double(as.vector(tycovar)),
+                 as.double(as.vector(unlist(lapply(projection,t)))),
+                 as.double(as.vector(logweights)), 
+                 as.integer(ndata),
+                 as.integer(dataDim),
+                 xamp = as.double(as.vector(t(xamp))),
+                 xmean = as.double(as.vector(t(xmean))),
+                 xcovar = as.double(as.vector(unlist(lapply(xcovar,t)))),
+                 as.integer(gaussDim),
+                 as.integer(ngauss),
+                 as.integer(as.vector(fixamp)), 
+                 as.integer(as.vector(fixmean)),
+                 as.integer(as.vector(fixcovar)),
+                 avgloglikedata = as.double(as.vector(avgloglikedata)), 
+                 as.double(tol),
+                 as.integer(maxiter),
+                 as.integer(likeonly),
+                 as.double(w), 
+                 as.integer(as.vector(clog)),
+                 as.integer(n_clog),
+                 as.integer(splitnmerge),
+                 as.integer(as.vector(clog2)),
+                 as.integer(n_clog2),
+                 as.integer(noprojection), 
+                 as.integer(diagerrors),
+                 as.integer(noweight),
+                 PACKAGE = "ExtremeDeconvolution")
+ 
     xmean <- matrix(res$xmean, dim(xmean), byrow = TRUE)
     start <- 1
     end <- 0

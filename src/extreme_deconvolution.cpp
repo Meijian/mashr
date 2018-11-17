@@ -49,6 +49,7 @@ void calc_splitnmerge(struct datapoint * data,int N,
   gsl_vector * Jsplit = gsl_vector_alloc(K);
   gsl_vector * Jsplit_temp = gsl_vector_alloc(K);
   gsl_vector_set_all(Jsplit,-1.);
+  
   //if there is missing data, fill in the missing data
   struct missingdatapoint{
     gsl_vector *ww;

@@ -5,8 +5,6 @@
 #include <stdio.h>
 #include "proj_gauss_mixtures.h"
 
-
-
 /* variable declarations */
 
 //Options:
@@ -27,8 +25,6 @@ struct gaussian * gaussians;
 //Data parameters:
 int N;//number of datapoints
 struct datapoint *data, *startdata;
-
-
 
 /* function declarations */
 bool parse_option(char line[]);

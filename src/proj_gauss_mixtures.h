@@ -1,7 +1,6 @@
 #ifndef __PROJ_GAUSS_MIXTURES_H__
 #define __PROJ_GAUSS_MIXTURES_H__
 
-
 /* include */
 #include <stdbool.h>
 #include <float.h>
@@ -45,9 +44,6 @@ struct modelbs * bs;
 FILE *logfile,*convlogfile;
 
 gsl_rng * randgen; /* global random number generator */
-
-
-
 
 /* function declarations */
 

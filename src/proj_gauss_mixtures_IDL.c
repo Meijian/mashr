@@ -36,15 +36,15 @@ int proj_gauss_mixtures_IDL (Rcpp::DoubleVector ydata,
 			     Rcpp::DoubleVector xcovar,
 			     int d, int K,
 			     Rcpp::LogicalVector fixamp,
-			     Rcpp::LogicalVector fixmean_int,
-			     Rcpp::LogicalVector fixcovar_int,
+			     Rcpp::LogicalVector fixmean,
+			     Rcpp::LogicalVector fixcovar,
 			     Rcpp::DoubleVector avgloglikedata,
-			     double tol, int maxiter, int ikeonly, double w,
+			     double tol, int maxiter, int likeonly, double w,
 			     Rcpp::IntegerVector logfilename,
 			     int slen, int splitnmerge,
-			     Rcpp::CharacterVector convlogfilename,
-			     int convloglen, int noprojection,
-			     int diagerrors, int noweights) {
+			     Rcpp::IntegerVector convlogfilename,
+			     int convloglen, bool noproj,
+			     bool diagerrs, bool noweight) {
   
   // Set up logfiles.
   bool keeplog = true;
@@ -84,9 +84,6 @@ int proj_gauss_mixtures_IDL (Rcpp::DoubleVector ydata,
   struct datapoint * data = (struct datapoint *) malloc( N * sizeof (struct datapoint) );
   struct gaussian * gaussians = (struct gaussian *) malloc (K * sizeof (struct gaussian) );
 
-  bool noproj= (bool) noprojection;
-  bool noweight= (bool) noweights;
-  bool diagerrs= (bool) diagerrors;
   int ii, jj,dd1,dd2;
   for (ii = 0; ii != N; ++ii){
     data->ww = gsl_vector_alloc(dy);

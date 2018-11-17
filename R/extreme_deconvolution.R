@@ -212,43 +212,70 @@ extreme_deconvolution <- function(ydata, ycovar, xamp, xmean, xcovar, projection
         logweights <- weight
     }
 
-    res <- .Call("_proj_gauss_mixtures_IDL",
-                 as.double(as.vector(t(ydata))),
-                 as.double(as.vector(tycovar)),
-                 as.double(as.vector(unlist(lapply(projection,t)))),
-                 as.double(as.vector(logweights)), 
-                 as.integer(ndata),
-                 as.integer(dataDim),
-                 xamp = as.double(as.vector(t(xamp))),
-                 xmean = as.double(as.vector(t(xmean))),
-                 xcovar = as.double(as.vector(unlist(lapply(xcovar,t)))),
-                 as.integer(gaussDim),
-                 as.integer(ngauss),
-                 as.integer(as.vector(fixamp)), 
-                 as.integer(as.vector(fixmean)),
-                 as.integer(as.vector(fixcovar)),
-                 avgloglikedata = as.double(as.vector(avgloglikedata)), 
-                 as.double(tol),
-                 as.integer(maxiter),
-                 as.integer(likeonly),
-                 as.double(w), 
-                 as.integer(as.vector(clog)),
-                 as.integer(n_clog),
-                 as.integer(splitnmerge),
-                 as.integer(as.vector(clog2)),
-                 as.integer(n_clog2),
-                 as.integer(noprojection), 
-                 as.integer(diagerrors),
-                 as.integer(noweight),
-                 PACKAGE = "ExtremeDeconvolution")
+    ydata        <- as.double(as.vector(t(ydata)))
+    tycovar      <- as.double(as.vector(tycovar))
+    projection   <- as.double(as.vector(unlist(lapply(projection,t))))
+    logweights   <- as.double(as.vector(logweights))
+    ndata        <- as.integer(data)
+    dataDim      <- as.integer(dataDim)
+    xamp         <- as.double(as.vector(t(xamp)))
+    xmean        <- as.double(as.vector(t(xmean)))
+    xcovar       <- as.double(as.vector(unlist(lapply(xcovar,t))))
+    gaussDim     <- as.integer(gaussDim)
+    ngauss       <- as.integer(ngauss)
+    fixamp       <- as.logical(as.vector(fixamp))
+    fixmean      <- as.logical(as.vector(fixmean))
+    fixcovar     <- as.logical(as.vector(fixcovar))
+    avgloglikedata <- as.double(as.vector(avgloglikedata))
+    tol          <- as.double(tol)
+    maxiter      <- as.integer(maxiter)
+    likeonly     <- as.integer(likeonly)
+    w            <- as.double(w)
+    clog         <- as.integer(as.vector(clog))
+    n_clog       <- as.integer(n_clog)
+    splitnmerge  <- as.integer(splitnmerge)
+    clog2        <- as.integer(as.vector(clog2))
+    n_clog2      <- as.integer(n_clog2)
+    noprojection <- as.integer(noprojection)
+    diagerrors   <- as.integer(diagerrors)
+    noweight     <- as.integer(noweight)
+    res <- proj_gauss_mixtures_IDL(ydata       = ydata,
+                                   ycovar      = tycovar,
+                                   projection  = projection,
+                                   logweights  = logweights,
+                                   N           = ndata,
+                                   dy          = dataDim,
+                                   amp         = xamp,
+                                   xmean       = xmean,
+                                   xcovar      = xcovar,
+                                   d           = gaussDim,
+                                   K           = ngauss,
+                                   fixamp      = fixamp,
+                                   fixmean     = fixmean,
+                                   fixcovar    = fixcovar,
+                                   avgloglikedata = avgloglikedata, 
+                                   tol         = tol,
+                                   maxiter     = maxiter,
+                                   likeonly    = likeonly,
+                                   w           = w,
+                                   logfilename = clog,
+                                   slen        = n_clog,
+                                   splitnmerge = splitnmerge,
+                                   convlogfilename = clog2,
+                                   convloglen  = n_clog2,
+                                   noproj      = noprojection,
+                                   diagerrs    = diagerrors,
+                                   noweight    = noweights)
  
     xmean <- matrix(res$xmean, dim(xmean), byrow = TRUE)
     start <- 1
     end <- 0
     for (i in 1:length(xcovar)) {
         end <- end + prod(dim(xcovar[[i]]))
-        xcovar[[i]] <- matrix(res$xcovar[start:end], dim(xcovar[[i]]), byrow = TRUE)
+        xcovar[[i]] <- matrix(res$xcovar[start:end], dim(xcovar[[i]]),
+                              byrow = TRUE)
         start <- end + 1
     }
-    return(list(xmean = xmean, xamp = res$xamp, xcovar = xcovar, avgloglikedata = res$avgloglikedata))
+    return(list(xmean = xmean, xamp = res$xamp, xcovar = xcovar,
+                avgloglikedata = res$avgloglikedata))
 } 

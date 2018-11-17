@@ -19,9 +19,11 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <time.h>
+#include <RcppGSL.h>
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_vector.h>
 #include "proj_gauss_mixtures.h"
+
 bool * int2bool(int * a, int K)
 {
   bool * x = (bool *) malloc(K * sizeof (bool));
@@ -31,28 +33,25 @@ bool * int2bool(int * a, int K)
   return x;
 }
 
+// [[Rcpp::export]]
 int proj_gauss_mixtures_IDL(double * ydata, double * ycovar, 
 			    double * projection, double * logweights,
-			    int *p_N, int *p_dy,
-			    double * amp, double * xmean,
-			    double * xcovar, int *p_d, int *p_K,
-			    int * fixamp_int, int * fixmean_int, int * fixcovar_int,
-			    double * avgloglikedata, double *p_tol,
-			    int *p_maxiter, int *p_likeonly, double *p_w,
-			    int * logfilename, int *p_slen, int *p_splitnmerge,
-			    int * convlogfilename, int *p_convloglen,
-			    int *p_noprojection, int *p_diagerrors,
-			    int *p_noweights){
-  // convert variables from R interface
-  int N = *p_N, dy = *p_dy, d = *p_d, K = *p_K,
-    maxiter = *p_maxiter, slen = *p_slen,
-    splitnmerge = *p_splitnmerge, convloglen = *p_convloglen,
-    likeonly = *p_likeonly, noprojection = *p_noprojection,
-    diagerrors = *p_diagerrors, noweights = *p_noweights;
-  double tol = *p_tol, w = *p_w;
-  bool * fixamp = int2bool(fixamp_int, K);
-  bool * fixmean = int2bool(fixmean_int, K);
-  bool * fixcovar = int2bool(fixcovar_int, K);
+			    int N, int dy, double * amp, double * xmean,
+			    double * xcovar, int d, int K,
+			    int * fixamp_int, int * fixmean_int,
+			    int * fixcovar_int,
+			    double * avgloglikedata, double tol,
+			    int maxiter, int ikeonly, double w,
+			    int * logfilename, int slen, int splitnmerge,
+			    int * convlogfilename, int convloglen,
+			    int noprojection, int diagerrors,
+			    int noweights) {
+  
+  // Convert variables from R interface.
+  bool* fixamp   = int2bool(fixamp_int,K);
+  bool* fixmean  = int2bool(fixmean_int,K);
+  bool* fixcovar = int2bool(fixcovar_int,K);
+  
   //Set up logfiles  
   bool keeplog = true;
   char logname[slen+1];

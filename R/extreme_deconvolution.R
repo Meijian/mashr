@@ -211,7 +211,7 @@ extreme_deconvolution <- function(ydata, ycovar, xamp, xmean, xcovar, projection
         noweight <- FALSE
         logweights <- weight
     }
-    # 
+
     res <- .Call("_proj_gauss_mixtures_IDL", as.double(as.vector(t(ydata))), as.double(as.vector(tycovar)),
         as.double(as.vector(unlist(lapply(projection, t)))), as.double(as.vector(logweights)), 
         as.integer(ndata), as.integer(dataDim), xamp = as.double(as.vector(t(xamp))), 

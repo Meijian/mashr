@@ -19,40 +19,34 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <time.h>
+#include <Rcpp.h>
 #include <RcppGSL.h>
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_vector.h>
 #include "proj_gauss_mixtures.h"
 
-bool * int2bool(int * a, int K)
-{
-  bool * x = (bool *) malloc(K * sizeof (bool));
-  int kk;
-  for (kk = 0; kk != K; ++kk) *(x++) = (bool) *(a++);
-  x -=K;
-  return x;
-}
-
 // [[Rcpp::export]]
-int proj_gauss_mixtures_IDL(double * ydata, double * ycovar, 
-			    double * projection, double * logweights,
-			    int N, int dy, double * amp, double * xmean,
-			    double * xcovar, int d, int K,
-			    int * fixamp_int, int * fixmean_int,
-			    int * fixcovar_int,
-			    double * avgloglikedata, double tol,
-			    int maxiter, int ikeonly, double w,
-			    int * logfilename, int slen, int splitnmerge,
-			    int * convlogfilename, int convloglen,
-			    int noprojection, int diagerrors,
-			    int noweights) {
+int proj_gauss_mixtures_IDL (Rcpp::DoubleVector ydata,
+			     Rcpp::DoubleVector ycovar, 
+			     Rcpp::DoubleVector projection,
+			     Rcpp::DoubleVector logweights,
+			     int N, int dy,
+			     Rcpp::DoubleVector amp,
+			     Rcpp::DoubleVector xmean,
+			     Rcpp::DoubleVector xcovar,
+			     int d, int K,
+			     Rcpp::LogicalVector fixamp,
+			     Rcpp::LogicalVector fixmean_int,
+			     Rcpp::LogicalVector fixcovar_int,
+			     Rcpp::DoubleVector avgloglikedata,
+			     double tol, int maxiter, int ikeonly, double w,
+			     Rcpp::IntegerVector logfilename,
+			     int slen, int splitnmerge,
+			     Rcpp::CharacterVector convlogfilename,
+			     int convloglen, int noprojection,
+			     int diagerrors, int noweights) {
   
-  // Convert variables from R interface.
-  bool* fixamp   = int2bool(fixamp_int,K);
-  bool* fixmean  = int2bool(fixmean_int,K);
-  bool* fixcovar = int2bool(fixcovar_int,K);
-  
-  //Set up logfiles  
+  // Set up logfiles.
   bool keeplog = true;
   char logname[slen+1];
   char convlogname[convloglen+1];
@@ -77,7 +71,6 @@ int proj_gauss_mixtures_IDL(double * ydata, double * ycovar,
     if (convlogfile == NULL) return -1;
   }
 
-
   if (keeplog){
     time_t now;
     time(&now);
@@ -87,7 +80,7 @@ int proj_gauss_mixtures_IDL(double * ydata, double * ycovar,
     fflush(logfile);
   }
   
-  //Copy everything into the right formats
+  // Copy everything into the right formats.
   struct datapoint * data = (struct datapoint *) malloc( N * sizeof (struct datapoint) );
   struct gaussian * gaussians = (struct gaussian *) malloc (K * sizeof (struct gaussian) );
 
@@ -139,8 +132,7 @@ int proj_gauss_mixtures_IDL(double * ydata, double * ycovar,
   xmean -= K*d;
   xcovar -= K*d*d;
 
-
-  //Print the initial model parameters to the logfile
+  // Print the initial model parameters to the logfile.
   int kk;
   if (keeplog){
     fprintf(logfile,"#\n#Using %i Gaussians and w = %f\n\n",K,w);
@@ -172,17 +164,14 @@ int proj_gauss_mixtures_IDL(double * ydata, double * ycovar,
     fflush(logfile);
   }
 
-
-
-  //Then run projected_gauss_mixtures
+  // Then run projected_gauss_mixtures.
   proj_gauss_mixtures(data,N,gaussians,K,(bool *) fixamp,
 		      (bool *) fixmean, (bool *) fixcovar,avgloglikedata,
 		      tol,(long long int) maxiter, (bool) likeonly, w,
 		      splitnmerge,keeplog,logfile,convlogfile,noproj,diagerrs,
 		      noweight);
 
-
-  //Print the final model parameters to the logfile
+  // Print the final model parameters to the logfile.
   if (keeplog){
     fprintf(logfile,"\n#Final model parameters obtained:\n\n");
     for (kk=0; kk != K; ++kk){
@@ -212,9 +201,7 @@ int proj_gauss_mixtures_IDL(double * ydata, double * ycovar,
     fflush(logfile);
   }
 
-
-
-  //Then update the arrays given to us by IDL
+  // Then update the arrays given to us by IDL.
   for (jj = 0; jj != K; ++jj){
     *(amp++) = gaussians->alpha;
     for (dd1 = 0; dd1 != d; ++dd1)
@@ -229,7 +216,7 @@ int proj_gauss_mixtures_IDL(double * ydata, double * ycovar,
   xmean -= K*d;
   xcovar -= K*d*d;
   
-  //And free any memory we allocated
+  // And free any memory we allocated.
   for (ii = 0; ii != N; ++ii){
     gsl_vector_free(data->ww);
     gsl_matrix_free(data->SS);

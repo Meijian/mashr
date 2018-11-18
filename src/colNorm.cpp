@@ -22,7 +22,6 @@
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_blas.h>
 
-// [[Rcpp::export]]
 Rcpp::NumericVector colNorm(const RcppGSL::Matrix & G) {
     int k = G.ncol();
     Rcpp::NumericVector n(k);           // to store results

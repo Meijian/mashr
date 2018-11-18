@@ -7,54 +7,6 @@
 
 using namespace Rcpp;
 
-// colNorm
-Rcpp::NumericVector colNorm(const RcppGSL::Matrix& G);
-RcppExport SEXP _mashr_colNorm(SEXP GSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const RcppGSL::Matrix& >::type G(GSEXP);
-    rcpp_result_gen = Rcpp::wrap(colNorm(G));
-    return rcpp_result_gen;
-END_RCPP
-}
-// proj_gauss_mixtures_IDL
-int proj_gauss_mixtures_IDL(Rcpp::DoubleVector ydatavec, Rcpp::DoubleVector ycovarvec, Rcpp::DoubleVector projectionvec, Rcpp::DoubleVector logweightsvec, int N, int dy, Rcpp::DoubleVector ampvec, Rcpp::DoubleVector xmeanvec, Rcpp::DoubleVector xcovarvec, int d, int K, Rcpp::LogicalVector fixampvec, Rcpp::LogicalVector fixmeanvec, Rcpp::LogicalVector fixcovarvec, Rcpp::DoubleVector avgloglikedatavec, double tol, int maxiter, int likeonly, double w, Rcpp::IntegerVector logfilenamevec, int slen, int splitnmerge, Rcpp::IntegerVector convlogfilenamevec, int convloglen, bool noproj, bool diagerrs, bool noweight);
-RcppExport SEXP _mashr_proj_gauss_mixtures_IDL(SEXP ydatavecSEXP, SEXP ycovarvecSEXP, SEXP projectionvecSEXP, SEXP logweightsvecSEXP, SEXP NSEXP, SEXP dySEXP, SEXP ampvecSEXP, SEXP xmeanvecSEXP, SEXP xcovarvecSEXP, SEXP dSEXP, SEXP KSEXP, SEXP fixampvecSEXP, SEXP fixmeanvecSEXP, SEXP fixcovarvecSEXP, SEXP avgloglikedatavecSEXP, SEXP tolSEXP, SEXP maxiterSEXP, SEXP likeonlySEXP, SEXP wSEXP, SEXP logfilenamevecSEXP, SEXP slenSEXP, SEXP splitnmergeSEXP, SEXP convlogfilenamevecSEXP, SEXP convloglenSEXP, SEXP noprojSEXP, SEXP diagerrsSEXP, SEXP noweightSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::DoubleVector >::type ydatavec(ydatavecSEXP);
-    Rcpp::traits::input_parameter< Rcpp::DoubleVector >::type ycovarvec(ycovarvecSEXP);
-    Rcpp::traits::input_parameter< Rcpp::DoubleVector >::type projectionvec(projectionvecSEXP);
-    Rcpp::traits::input_parameter< Rcpp::DoubleVector >::type logweightsvec(logweightsvecSEXP);
-    Rcpp::traits::input_parameter< int >::type N(NSEXP);
-    Rcpp::traits::input_parameter< int >::type dy(dySEXP);
-    Rcpp::traits::input_parameter< Rcpp::DoubleVector >::type ampvec(ampvecSEXP);
-    Rcpp::traits::input_parameter< Rcpp::DoubleVector >::type xmeanvec(xmeanvecSEXP);
-    Rcpp::traits::input_parameter< Rcpp::DoubleVector >::type xcovarvec(xcovarvecSEXP);
-    Rcpp::traits::input_parameter< int >::type d(dSEXP);
-    Rcpp::traits::input_parameter< int >::type K(KSEXP);
-    Rcpp::traits::input_parameter< Rcpp::LogicalVector >::type fixampvec(fixampvecSEXP);
-    Rcpp::traits::input_parameter< Rcpp::LogicalVector >::type fixmeanvec(fixmeanvecSEXP);
-    Rcpp::traits::input_parameter< Rcpp::LogicalVector >::type fixcovarvec(fixcovarvecSEXP);
-    Rcpp::traits::input_parameter< Rcpp::DoubleVector >::type avgloglikedatavec(avgloglikedatavecSEXP);
-    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
-    Rcpp::traits::input_parameter< int >::type maxiter(maxiterSEXP);
-    Rcpp::traits::input_parameter< int >::type likeonly(likeonlySEXP);
-    Rcpp::traits::input_parameter< double >::type w(wSEXP);
-    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type logfilenamevec(logfilenamevecSEXP);
-    Rcpp::traits::input_parameter< int >::type slen(slenSEXP);
-    Rcpp::traits::input_parameter< int >::type splitnmerge(splitnmergeSEXP);
-    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type convlogfilenamevec(convlogfilenamevecSEXP);
-    Rcpp::traits::input_parameter< int >::type convloglen(convloglenSEXP);
-    Rcpp::traits::input_parameter< bool >::type noproj(noprojSEXP);
-    Rcpp::traits::input_parameter< bool >::type diagerrs(diagerrsSEXP);
-    Rcpp::traits::input_parameter< bool >::type noweight(noweightSEXP);
-    rcpp_result_gen = Rcpp::wrap(proj_gauss_mixtures_IDL(ydatavec, ycovarvec, projectionvec, logweightsvec, N, dy, ampvec, xmeanvec, xcovarvec, d, K, fixampvec, fixmeanvec, fixcovarvec, avgloglikedatavec, tol, maxiter, likeonly, w, logfilenamevec, slen, splitnmerge, convlogfilenamevec, convloglen, noproj, diagerrs, noweight));
-    return rcpp_result_gen;
-END_RCPP
-}
 // calc_lik_rcpp
 Rcpp::List calc_lik_rcpp(Rcpp::NumericMatrix b_mat, Rcpp::NumericMatrix s_mat, Rcpp::NumericMatrix v_mat, Rcpp::NumericMatrix l_mat, Rcpp::NumericVector U_3d, bool logd, bool common_cov);
 RcppExport SEXP _mashr_calc_lik_rcpp(SEXP b_matSEXP, SEXP s_matSEXP, SEXP v_matSEXP, SEXP l_matSEXP, SEXP U_3dSEXP, SEXP logdSEXP, SEXP common_covSEXP) {
@@ -92,11 +44,12 @@ BEGIN_RCPP
 END_RCPP
 }
 
+SEXP proj_gauss_mixtures_IDL(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+
 static const R_CallMethodDef CallEntries[] = {
-    {"_mashr_colNorm", (DL_FUNC) &_mashr_colNorm, 1},
-    {"_mashr_proj_gauss_mixtures_IDL", (DL_FUNC) &_mashr_proj_gauss_mixtures_IDL, 27},
     {"_mashr_calc_lik_rcpp", (DL_FUNC) &_mashr_calc_lik_rcpp, 7},
     {"_mashr_calc_post_rcpp", (DL_FUNC) &_mashr_calc_post_rcpp, 9},
+    {"proj_gauss_mixtures_IDL", (DL_FUNC) &proj_gauss_mixtures_IDL, 27},
     {NULL, NULL, 0}
 };
 

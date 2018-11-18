@@ -9,8 +9,8 @@
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_rng.h>
-#include <Rcpp.h>
-#include <RcppGSL.h>
+#include <R.h>
+#include <Rinternals.h>
 #include "proj_gauss_main.h"
 #include "proj_gauss_mixtures.h"
 
@@ -77,13 +77,15 @@ void calc_splitnmerge(struct datapoint * data,int N,
       continue;
     }
 
-    /*AS IT STANDS THE MISSING DATA PART IS *NOT* IMPLEMENTED CORRECTLY: 
-      A CORRECT IMPLEMENTATION NEEDS THE NULL SPACE OF THE PROJECTION 
-      MATRIX WHICH CAN BE FOUND FROM THE FULL SINGULAR VALUE DECOMPOSITIIN, 
-      UNFORTUNATELY GSL DOES NOT COMPUTE THE FULL SVD, BUT ONLY THE THIN SVD. 
-      LAPACK MIGHT DO, BUT MIGHT NOT BE INSTALLED (?) AND THIS MIGHT BE HARD TO IMPLEMENT.
+    /*AS IT STANDS THE MISSING DATA PART IS *NOT* IMPLEMENTED
+      CORRECTLY: A CORRECT IMPLEMENTATION NEEDS THE NULL SPACE OF THE
+      PROJECTION MATRIX WHICH CAN BE FOUND FROM THE FULL SINGULAR
+      VALUE DECOMPOSITIIN, UNFORTUNATELY GSL DOES NOT COMPUTE THE FULL
+      SVD, BUT ONLY THE THIN SVD.  LAPACK MIGHT DO, BUT MIGHT NOT BE
+      INSTALLED (?) AND THIS MIGHT BE HARD TO IMPLEMENT.
 
-      INDICATED BELOW ARE THE SECTION THAT WOULD HAVE TO BE FIXED TO MAKE THIS WORK
+      INDICATED BELOW ARE THE SECTION THAT WOULD HAVE TO BE FIXED TO
+      MAKE THIS WORK
      */
 
     //calculate expectation, for this we need to calculate the bbijs (EXACTLY THE SAME AS IN PROJ_EM, SHOULD WRITE GENERAL FUNCTION TO DO THIS)
@@ -257,11 +259,6 @@ double logsum(gsl_matrix * q, int row, bool isrow){
   return log(loglike)-max;
 }
 
-#include <gsl/gsl_matrix.h>
-#include <float.h>
-#include <stdbool.h>
-#include "proj_gauss_mixtures.h"
-
 void minmax(gsl_matrix * q, int row, bool isrow, double * min, 
 	    double * max){
   *max = -DBL_MAX;
@@ -291,30 +288,6 @@ void minmax(gsl_matrix * q, int row, bool isrow, double * min,
 
   return ;
 }
-/*
-  NAME:
-     normalize_row
-  PURPOSE:
-     normalize a row (or column) of a matrix given as logs
-  CALLING SEQUENCE:
-     normalize_row(gsl_matrix * q, int row,bool isrow,bool noweight,
-     double weight)
-  INPUT:
-     q            - matrix
-     row          - row to be normalized
-     isrow        - is it a row or a column
-     noweight    - add a weight to all of the values?
-     weight       - weight to be added to all of the values
-  OUTPUT:
-     normalization factor (i.e. logsum)
-  REVISION HISTORY:
-     2008-09-21 - Written Bovy
-     2010-04-01 - Added noweight and weight inputs to allow the qij to have 
-                  weights - Bovy
-*/
-#include <math.h>
-#include <gsl/gsl_matrix.h>
-#include "proj_gauss_mixtures.h"
 
 double normalize_row(gsl_matrix * q, int row, bool isrow,
 		     bool noweight, double weight){
@@ -343,23 +316,6 @@ double normalize_row(gsl_matrix * q, int row, bool isrow,
 
   return loglike;
 }
-/*
-  NAME:
-     parse_option
-  PURPOSE:
-     parse an option line in the initial conditions file
-  CALLING SEQUENCE:
-     parse_option(char line[])
-  INPUT:
-     line   - the line to parse
-  OUTPUT:
-     sets the relevant option
-  REVISION HISTORY:
-     2008-09-21 - Written Bovy
-*/
-#include <stdbool.h>
-#include <string.h>
-#include "proj_gauss_main.h"
 
 bool parse_option(char line[]){
   //Define the options
@@ -433,47 +389,6 @@ bool parse_option(char line[]){
   
   return true;
 }
-/*
-  NAME:
-     proj_EM
-  PURPOSE:
-     goes through proj_EM
-  CALLING SEQUENCE:
-     proj_EM(struct datapoint * data, int N, struct gaussian * gaussians, 
-     int K, bool * fixamp, bool * fixmean, bool * fixcovar, 
-     double * avgloglikedata, double tol,long long int maxiter, 
-     bool likeonly, double w,int partial_indx[3],double * qstarij,
-     bool keeplog, FILE *logfile, FILE *tmplogfile, bool noproj, 
-     bool diagerrs, bool noweight)
-  INPUT:
-     data         - the data
-     N            - number of data points
-     gaussians    - model gaussians
-     K            - number of gaussians
-     fixamp       - fix the amplitude?
-     fixmean      - fix the mean?
-     fixcovar     - fix the covariance?
-     tol          - convergence limit
-     maxiter      - maximum number of iterations
-     likeonly     - only compute the likelihood?
-     w            - regularization parameter
-     keeplog      - keep a log in a logfile?
-     logfile      - pointer to the logfile
-     tmplogfile   - pointer to a tmplogfile to which the log likelihoods 
-                    are written
-     noproj       - don't perform any projections
-     diagerrs     - the data->SS errors-squared are diagonal
-     noweight     - don't use data-weights
-  OUTPUT:
-     avgloglikedata - average log likelihood of the data
-  REVISION HISTORY:
-     2008-09-21 - Written Bovy
-     2010-03-01 Added noproj option - Bovy
-     2010-04-01 Added noweight option - Bovy
-*/
-#include <stdio.h>
-#include <math.h>
-#include "proj_gauss_mixtures.h"
 
 void proj_EM(struct datapoint * data, int N, struct gaussian * gaussians, 
 	     int K,bool * fixamp, bool * fixmean, bool * fixcovar, 
@@ -522,49 +437,6 @@ void proj_EM(struct datapoint * data, int N, struct gaussian * gaussians,
 
   return;
 }
-/*
-  NAME:
-     proj_EM_step
-  PURPOSE:
-     one proj_EM step
-  CALLING SEQUENCE:
-     proj_EM_step(struct datapoint * data, int N, struct gaussian * gaussians,
-     int K,bool * fixamp, bool * fixmean, bool * fixcovar, 
-     double * avgloglikedata, bool likeonly, double w, bool noproj, 
-     bool diagerrs, bool noweight)
-  INPUT:
-     data         - the data
-     N            - number of data points
-     gaussians    - model gaussians
-     K            - number of model gaussians
-     fixamp       - fix the amplitude?
-     fixmean      - fix the mean?
-     fixcovar     - fix the covar?
-     likeonly     - only compute likelihood?
-     w            - regularization parameter
-     noproj       - don't perform any projections
-     diagerrs     - the data->SS errors-squared are diagonal
-     noweight     - don't use data-weights
-  OUTPUT:
-     avgloglikedata - average loglikelihood of the data
-  REVISION HISTORY:
-     2008-09-21 - Written Bovy
-     2010-03-01 Added noproj option - Bovy
-     2010-04-01 Added noweight option - Bovy
-*/
-#ifdef _OPENMP
-#include <omp.h>
-#endif
-
-#include <math.h>
-//#include <time.h>
-//#include <sys/time.h>
-#include <float.h>
-#include <gsl/gsl_matrix.h>
-#include <gsl/gsl_vector.h>
-#include <gsl/gsl_linalg.h>
-#include <gsl/gsl_blas.h>
-#include "proj_gauss_mixtures.h"
 
 #define CHUNKSIZE 1
 
@@ -825,72 +697,11 @@ void proj_EM_step(struct datapoint * data, int N,
     fixamp -= K;
     gaussians -= K;
   }
-  //gettimeofday(&end,NULL);
-  //double diff, diff1, diff2, diff3, diff4, diff5,diff6;
-  //diff= difftime (end.tv_sec,start.tv_sec)+difftime (end.tv_usec,start.tv_usec)/1000000;
-  //diff1= (difftime(time1.tv_sec,start.tv_sec)+difftime(time1.tv_usec,start.tv_usec)/1000000)/diff;
-  //diff2= (difftime(time2.tv_sec,time1.tv_sec)+difftime(time2.tv_usec,time1.tv_usec)/1000000)/diff;
-  //diff3= (difftime(time3.tv_sec,time2.tv_sec)+difftime(time3.tv_usec,time2.tv_usec)/1000000)/diff;
-  //diff4= (difftime(time4.tv_sec,time3.tv_sec)+difftime(time4.tv_usec,time3.tv_usec)/1000000)/diff;
-  //diff5= (difftime(time5.tv_sec,time4.tv_sec)+difftime(time5.tv_usec,time4.tv_usec)/1000000)/diff;
-  //diff6= (difftime(end.tv_sec,time5.tv_sec)+difftime(end.tv_usec,time5.tv_usec)/1000000)/diff;
-  //printf("%f,%f,%f,%f,%f,%f,%f\n",diff,diff1,diff2,diff3,diff4,diff5,diff6);
 
   free(allfixed);
 
-
   return;
 }
-
-/*
-  NAME:
-     proj_gauss_mixtures
-  PURPOSE:
-     runs the full projected gaussian mixtures algorithms, with 
-     regularization and split and merge
-  CALLING SEQUENCE:
-     proj_gauss_mixtures(struct datapoint * data, int N, 
-     struct gaussian * gaussians, int K,bool * fixamp, bool * fixmean, 
-     bool * fixcovar, double * avgloglikedata, double tol,
-     long long int maxiter, bool likeonly, double w, int splitnmerge, 
-     bool keeplog, FILE *logfile, FILE *convlogfile, bool noproj, 
-     bool diagerrs,noweight)
-  INPUT:
-     data        - the data
-     N           - number of datapoints
-     gaussians   - model gaussians (initial conditions)
-     K           - number of model gaussians
-     fixamp      - fix the amplitude?
-     fixmean     - fix the mean?
-     fixcovar    - fix the covar?
-     tol         - proj_EM convergence limit
-     maxiter     - maximum number of iterations in each proj_EM
-     likeonly    - only compute the likelihood?
-     w           - regularization paramter
-     splitnmerge - split 'n' merge depth (how far down the list to go)
-     keeplog     - keep a log in a logfile?
-     logfile     - pointer to the logfile
-     convlogfile - pointer to the convlogfile
-     noproj      - don't perform any projections
-     diagerrs    - the data->SS errors-squared are diagonal
-     noweight    - don't use data-weights
-  OUTPUT:
-     updated model gaussians
-     avgloglikedata - average log likelihood of the data
-  REVISION HISTORY:
-     2008-08-21 Written Bovy
-     2010-03-01 Added noproj option - Bovy
-     2010-04-01 Added noweight option - Bovy
-*/
-#ifdef _OPENMP
-#include <omp.h>
-#endif
-#include <stdio.h>
-#include <math.h>
-#include <stdbool.h>
-#include <gsl/gsl_matrix.h>
-#include <gsl/gsl_vector.h>
-#include "proj_gauss_mixtures.h"
 
 void proj_gauss_mixtures(struct datapoint * data, int N, 
 			 struct gaussian * gaussians, int K,
@@ -1184,70 +995,39 @@ void proj_gauss_mixtures(struct datapoint * data, int N,
   return;
 }
 
-/*
-  NAME:
-     proj_gauss_mixtures_IDL
-  PURPOSE:
-     run the projected gaussian mixtures algorithm from R
-	[Patched from the original IDL (or python) interface by Gao Wang]
-  CALLING SEQUENCE:
-     see R wrapper
-  INPUT:
-     from R wrapper
-  OUTPUT:
-     updated model gaussians and average loglikelihood, see R WRAPPER
-  REVISION HISTORY:
-     2008-09-21 - Written Bovy
-     2010-03-01 Added noproj option - Bovy
-     2010-04-01 Added noweight option and logweights - Bovy
-     2015-08-08 Patched by Gao Wang to interface with R instead
-*/
-#include <stdio.h>
-#include <stdbool.h>
-#include <time.h>
-#include <Rcpp.h>
-#include <RcppGSL.h>
-#include <gsl/gsl_matrix.h>
-#include <gsl/gsl_vector.h>
-#include "proj_gauss_mixtures.h"
+bool * int2bool(int * a, int K)
+{
+  bool * x = (bool *) malloc(K * sizeof (bool));
+  int kk;
+  for (kk = 0; kk != K; ++kk) *(x++) = (bool) *(a++);
+  x -=K;
+  return x;
+}
 
-// [[Rcpp::export]]
-int proj_gauss_mixtures_IDL (Rcpp::DoubleVector ydatavec,
-			     Rcpp::DoubleVector ycovarvec, 
-			     Rcpp::DoubleVector projectionvec,
-			     Rcpp::DoubleVector logweightsvec,
-			     int N, int dy,
-			     Rcpp::DoubleVector ampvec,
-			     Rcpp::DoubleVector xmeanvec,
-			     Rcpp::DoubleVector xcovarvec,
-			     int d, int K,
-			     Rcpp::LogicalVector fixampvec,
-			     Rcpp::LogicalVector fixmeanvec,
-			     Rcpp::LogicalVector fixcovarvec,
-			     Rcpp::DoubleVector avgloglikedatavec,
-			     double tol, int maxiter, int likeonly, double w,
-			     Rcpp::IntegerVector logfilenamevec,
-			     int slen, int splitnmerge,
-			     Rcpp::IntegerVector convlogfilenamevec,
-			     int convloglen, bool noproj,
-			     bool diagerrs, bool noweight) {
-
-  // Get pointers to the data.
-  double* ydata      = ydatavec.begin();
-  double* ycovar     = ycovarvec.begin();
-  double* projection = projectionvec.begin();
-  double* logweights = logweightsvec.begin();
-  double* avgloglikedata = avgloglikedatavec.begin();
-  double* amp        = ampvec.begin();
-  double* xmean      = xmeanvec.begin();
-  double* xcovar     = xcovarvec.begin();
-  int*    fixamp     = fixampvec.begin();
-  int*    fixmean    = fixmeanvec.begin();
-  int*    fixcovar   = fixcovarvec.begin();
-  int*    logfilename = logfilenamevec.begin();
-  int*    convlogfilename = convlogfilenamevec.begin();
+SEXP proj_gauss_mixtures_IDL(double * ydata, double * ycovar, 
+			    double * projection, double * logweights,
+			    int *p_N, int *p_dy,
+			    double * amp, double * xmean,
+			    double * xcovar, int *p_d, int *p_K,
+			    int * fixamp_int, int * fixmean_int, int * fixcovar_int,
+			    double * avgloglikedata, double *p_tol,
+			    int *p_maxiter, int *p_likeonly, double *p_w,
+			    int * logfilename, int *p_slen, int *p_splitnmerge,
+			    int * convlogfilename, int *p_convloglen,
+			    int *p_noprojection, int *p_diagerrors,
+			    int *p_noweights) {
   
-  // Set up logfiles.
+  // convert variables from R interface
+  int N = *p_N, dy = *p_dy, d = *p_d, K = *p_K,
+    maxiter = *p_maxiter, slen = *p_slen,
+    splitnmerge = *p_splitnmerge, convloglen = *p_convloglen,
+    likeonly = *p_likeonly, noprojection = *p_noprojection,
+    diagerrors = *p_diagerrors, noweights = *p_noweights;
+  double tol = *p_tol, w = *p_w;
+  bool * fixamp = int2bool(fixamp_int, K);
+  bool * fixmean = int2bool(fixmean_int, K);
+  bool * fixcovar = int2bool(fixcovar_int, K);
+  //Set up logfiles  
   bool keeplog = true;
   char logname[slen+1];
   char convlogname[convloglen+1];
@@ -1267,9 +1047,9 @@ int proj_gauss_mixtures_IDL (Rcpp::DoubleVector ydatavec,
 
   if (keeplog) {
     logfile = fopen(logname,"a");
-    if (logfile == NULL) return -1;
+    if (logfile == NULL) return R_NilValue;
     convlogfile = fopen(convlogname,"w");
-    if (convlogfile == NULL) return -1;
+    if (convlogfile == NULL) return R_NilValue;
   }
 
   if (keeplog){
@@ -1281,10 +1061,13 @@ int proj_gauss_mixtures_IDL (Rcpp::DoubleVector ydatavec,
     fflush(logfile);
   }
   
-  // Copy everything into the right formats.
+  //Copy everything into the right formats
   struct datapoint * data = (struct datapoint *) malloc( N * sizeof (struct datapoint) );
   struct gaussian * gaussians = (struct gaussian *) malloc (K * sizeof (struct gaussian) );
 
+  bool noproj= (bool) noprojection;
+  bool noweight= (bool) noweights;
+  bool diagerrs= (bool) diagerrors;
   int ii, jj,dd1,dd2;
   for (ii = 0; ii != N; ++ii){
     data->ww = gsl_vector_alloc(dy);
@@ -1330,7 +1113,8 @@ int proj_gauss_mixtures_IDL (Rcpp::DoubleVector ydatavec,
   xmean -= K*d;
   xcovar -= K*d*d;
 
-  // Print the initial model parameters to the logfile.
+
+  //Print the initial model parameters to the logfile
   int kk;
   if (keeplog){
     fprintf(logfile,"#\n#Using %i Gaussians and w = %f\n\n",K,w);
@@ -1361,15 +1145,16 @@ int proj_gauss_mixtures_IDL (Rcpp::DoubleVector ydatavec,
     gaussians -= K;
     fflush(logfile);
   }
-
-  // Then run projected_gauss_mixtures.
+  
+  //Then run projected_gauss_mixtures
   proj_gauss_mixtures(data,N,gaussians,K,(bool *) fixamp,
 		      (bool *) fixmean, (bool *) fixcovar,avgloglikedata,
 		      tol,(long long int) maxiter, (bool) likeonly, w,
 		      splitnmerge,keeplog,logfile,convlogfile,noproj,diagerrs,
 		      noweight);
 
-  // Print the final model parameters to the logfile.
+
+  //Print the final model parameters to the logfile
   if (keeplog){
     fprintf(logfile,"\n#Final model parameters obtained:\n\n");
     for (kk=0; kk != K; ++kk){
@@ -1398,8 +1183,8 @@ int proj_gauss_mixtures_IDL (Rcpp::DoubleVector ydatavec,
     gaussians -= K;
     fflush(logfile);
   }
-
-  // Then update the arrays given to us by IDL.
+  
+  //Then update the arrays given to us by IDL
   for (jj = 0; jj != K; ++jj){
     *(amp++) = gaussians->alpha;
     for (dd1 = 0; dd1 != d; ++dd1)
@@ -1414,7 +1199,7 @@ int proj_gauss_mixtures_IDL (Rcpp::DoubleVector ydatavec,
   xmean -= K*d;
   xcovar -= K*d*d;
   
-  // And free any memory we allocated.
+  //And free any memory we allocated
   for (ii = 0; ii != N; ++ii){
     gsl_vector_free(data->ww);
     gsl_matrix_free(data->SS);
@@ -1437,29 +1222,8 @@ int proj_gauss_mixtures_IDL (Rcpp::DoubleVector ydatavec,
     fclose(convlogfile);
   }
 
-  return 0;
+  return R_NilValue;
 }
-/*
-  NAME:
-     read_IC
-  PURPOSE:
-     read the initial conditions file
-  CALLING SEQUENCE:
-     read_IC(char ICfilename[])
-  INPUT:
-     ICfilename   - initial conditions filename
-  OUTPUT:
-     sets the options and the initial conditions
-  REVISION HISTORY:
-     2008-09-21 - Written Bovy
-*/
-#include <stdbool.h>
-#include <stdio.h>
-#include <math.h>
-#include <gsl/gsl_vector.h>
-#include <gsl/gsl_matrix.h>
-#include "proj_gauss_mixtures.h"
-#include "proj_gauss_main.h"
 
 bool read_IC(char ICfilename[]){
   
@@ -1645,27 +1409,6 @@ bool read_IC(char ICfilename[]){
   return true;
   
 }
-/*
-  NAME:
-      read_data
-  PURPOSE:
-      read the data from the data input file
-  CALLING SEQUENCE:
-      read_data(inputfilename)
-  INPUT:
-      inputfilename - name of the data file
-  OUPUT:
-      reads everything into the right structures
-  REVISION HISTORY:
-     2008-09-21 - Written Bovy
-*/
-#include <stdio.h>
-#include <stdbool.h>
-#include <math.h>
-#include <gsl/gsl_vector.h>
-#include <gsl/gsl_matrix.h>
-#include "proj_gauss_main.h"
-#include "proj_gauss_mixtures.h"
 
 bool read_data(char inputfilename[]){
   
@@ -1742,24 +1485,6 @@ bool read_data(char inputfilename[]){
 
   return true;
 }
-/*
-  NAME:
-     read_till_sep
-  PURPOSE:
-     reads a data value from the datafile
-  CALLING SEQUENCE:
-     read_till_sep(char curr_value[],FILE *file,char sep)
-  INPUT:
-     *file  - pointer to the datafile
-     sep    - data separator in the datafile
-  OUTPUT:
-     curr_value - value that was read
-  REVISION HISTORY:
-     2008-09-21 - Written Bovy
-*/
-#include <stdbool.h>
-#include <stdio.h>
-#include "proj_gauss_main.h"
 
 bool read_till_sep(char curr_value[],FILE *file,char sep){
   int vv=0;
@@ -1774,30 +1499,6 @@ bool read_till_sep(char curr_value[],FILE *file,char sep){
 
   return false;
 }
-/*
-  NAME:
-     splitnmergegauss
-  PURPOSE:
-     split one gaussian and merge two other gaussians
-  CALLING SEQUENCE:
-     splitnmergegauss(struct gaussian * gaussians,int K, gsl_matrix * qij, 
-     int j, int k, int l)
-  INPUT:
-     gaussians   - model gaussians
-     K           - number of gaussians
-     qij         - matrix of log(posterior likelihoods)
-     j,k         - gaussians that need to be merged
-     l           - gaussian that needs to be split
-  OUTPUT:
-     updated gaussians
-  REVISION HISTORY:
-     2008-09-21 - Written Bovy
-*/
-#include <math.h>
-#include <gsl/gsl_matrix.h>
-#include <gsl/gsl_vector.h>
-#include <gsl/gsl_linalg.h>
-#include "proj_gauss_mixtures.h"
 
 void splitnmergegauss(struct gaussian * gaussians,int K, 
 		      gsl_matrix * qij, int j, int k, int l){
@@ -1900,24 +1601,6 @@ void splitnmergegauss(struct gaussian * gaussians,int K,
 
   return ;
 }
-/*
-  NAME:
-     write_model
-  PURPOSE:
-     writes the final model parameters to a file
-  CALLING SEQUENCE:
-     write_model(char outputfilename[])
-  INPUT:
-     outputfilename
-  OUTPUT:
-     -
-  REVISION HISTORY:
-     2008-09-21 - Written Bovy
-*/
-#include <stdbool.h>
-#include <stdio.h>
-#include "proj_gauss_mixtures.h"
-#include "proj_gauss_main.h"
 
 bool write_model(char outputfilename[]){
 
